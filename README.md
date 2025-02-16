@@ -128,9 +128,8 @@ Distribuido bajo la Licencia MIT. Ver `LICENSE` para más información.
 
 ## 📧 Contacto
 
-Tu Nombre - [@TomasPalazon]((https://x.com/Tomaspalazon)) - tomas.palazon@outlook.com
+[@TomasPalazon]((https://x.com/Tomaspalazon)) - tomas.palazon@outlook.com
 
-Link del proyecto: [https://github.com/tu-usuario/predictive-maintenance](https://github.com/tu-usuario/predictive-maintenance)
 
 ## 🙏 Agradecimientos
 
