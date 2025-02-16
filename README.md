@@ -80,7 +80,8 @@ Sistema de monitorización y mantenimiento predictivo en tiempo real para equipo
 
 ## 🏗️ Arquitectura
 
-![Untitled diagram-2025-02-16-121216](https://github.com/user-attachments/assets/97abc22d-6231-4107-801c-2db8c15fdf37)
+![Untitled diagram-2025-02-16-125242](https://github.com/user-attachments/assets/8b8ad2f8-a73a-4f06-86bd-5087e468e27e)
+
 
 ## 👁️‍🗨️ Apariencia del dashboard         
 
