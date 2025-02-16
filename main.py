@@ -29,7 +29,7 @@ class ProcessManager:
         
     def get_python_path(self):
         if sys.platform.startswith('win'):
-            return r"C:\Users\tomy_\AppData\Local\Programs\Python\Python39\python.exe"
+            return r"PATH TO YOUR PYTHON"
         return sys.executable
     
     def run_script(self, name, script_path):
