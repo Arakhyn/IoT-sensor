@@ -29,37 +29,36 @@ Sistema de monitorización y mantenimiento predictivo en tiempo real para equipo
 
 1. Clonar el repositorio:
 
-git clone https://github.com/tu-usuario/predictive-maintenance.git
-cd predictive-maintenance
+   git clone https://github.com/tu-usuario/predictive-maintenance.git
+   cd predictive-maintenance
 
 2. Configurar el entorno:
 
-cp config.json.example config.json
+   cp config.json.example config.json
 
 3. Iniciar los servicios:
 
-docker-compose up -d
+   docker-compose up -d
 
 ### Instalación Manual
 
 1. Crear entorno virtual:
 
-python -m venv venv
-source venv/bin/activate # En Windows: venv\Scripts\activate
+   python -m venv venv
+   source venv/bin/activate # En Windows: venv\Scripts\activate
 
 2. Instalar dependencias:
 
-pip install -r requirements.txt
+   pip install -r requirements.txt
 
 3. Configurar servicios:
 
-cp config.json.example config.json
+   cp config.json.example config.json
 
 
 4. Iniciar la aplicación:
 
-
-python main.py
+   python main.py
 
 
 
