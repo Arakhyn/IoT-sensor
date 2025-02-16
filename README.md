@@ -5,7 +5,7 @@
 ![Docker](https://img.shields.io/badge/Docker-Enabled-blue.svg)
 ![License](https://img.shields.io/badge/License-MIT-yellow.svg)
 
-Sistema de monitorización y mantenimiento predictivo en tiempo real para equipos industriales, utilizando Apache Kafka y análisis predictivo.
+Sistema de monitorización y mantenimiento predictivo en tiempo real para equipos industriales, utilizando Apache Kafka y análisis predictivo. El programa simula los datos a falta de una conexion real con un sensor PLC mediante los protocolos Siemenes o Modbus.
 
 ## 🚀 Características
 
