@@ -1,0 +1,76 @@
+# Logs
+*.log
+plc_consumer.log
+plc_producer.log
+main.log
+predictive_maintenance.log
+
+# Configuración con datos sensibles
+config.json
+
+# Archivos de Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Entornos virtuales
+venv/
+ENV/
+.env
+
+# IDEs
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Rutas de sistema y archivos temporales
+*.pyc
+__pycache__/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Rutas específicas de usuario
+**/AppData/**
+**/Local/**
+**/Programs/**
+**/Python*/**
+
+# Archivos de sistema Windows
+Thumbs.db
+desktop.ini
+
+# Archivos de sistema macOS
+.DS_Store
+.AppleDouble
+.LSOverride 
+
+echo "sparkdasda.py" > .gitignore
+echo "cloud/" >> .gitignore
+echo "*.log" >> .gitignore
+echo "__pycache__/" >> .gitignore
+echo ".dockerignore" >> .gitignore
+echo "config.json.example" >> .gitignore
+echo "log4j.properties" >> .gitignore
+echo "iot/" >> .gitignore
+echo "jars/" >> .gitignore
+echo "sensor_producer.py" >> .gitignore  # Si no lo necesitas
+git add .gitignore

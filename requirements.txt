@@ -1,0 +1,13 @@
+# Versiones específicas para Python 3.9
+numpy==1.21.5
+kafka-python==2.0.2
+six>=1.10.0
+pandas==1.4.4
+scikit-learn==1.1.2
+dash==2.6.0
+plotly==5.10.0
+sqlalchemy
+psycopg2-binary==2.9.3
+docker-compose>=1.29.2
+docker>=5.0.0
+python-dateutil==2.8.2

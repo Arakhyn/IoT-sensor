@@ -1,0 +1,36 @@
+# Git
+.git
+.gitignore
+
+# Logs
+*.log
+plc_consumer.log
+plc_producer.log
+main.log
+predictive_maintenance.log
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+.env
+
+# IDEs
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Docker
+.docker/
+docker-compose.override.yml
+
+# Otros
+README.md
+LICENSE
+*.md 
