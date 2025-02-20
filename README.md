@@ -81,6 +81,7 @@ python main.py
 
 ## 🏗️ Arquitectura
 
+![Untitled diagram-2025-02-16-125242](https://github.com/user-attachments/assets/cd921e6e-651f-4584-824c-32c6e649570a)
 
 
 
@@ -120,7 +121,7 @@ Distribuido bajo la Licencia MIT. Ver `LICENSE` para más información.
 
 ## 📧 Contacto
 
-Tu Nombre - [@tu_twitter](https://twitter.com/tu_twitter) - email@example.com
+Email - tomas.palazon@outlook.com
 
 Link del proyecto: [https://github.com/tu-usuario/predictive-maintenance](https://github.com/tu-usuario/predictive-maintenance)
 
