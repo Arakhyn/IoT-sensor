@@ -96,7 +96,8 @@ predictive-maintenance/
 ├── sensor_producerPLC.py # Productor de datos
 ├── sensor_consumerPLCNOSPARK.py # Consumidor
 └── maintenance_dashboard.py # Dashboard
-
+└── notification_system.py # Sistema de notificaciones por mail
+└── predictive_maintenance_agent.py #Machine Learning
 
 
 ## ⚙️ Configuración
@@ -123,7 +124,6 @@ Distribuido bajo la Licencia MIT. Ver `LICENSE` para más información.
 
 Email - tomas.palazon@outlook.com
 
-Link del proyecto: [https://github.com/tu-usuario/predictive-maintenance](https://github.com/tu-usuario/predictive-maintenance)
 
 ## 🙏 Agradecimientos
 
