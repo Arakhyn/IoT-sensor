@@ -34,8 +34,6 @@ pipeline {
     environment {
         PYTHON_PATH = 'C:\\Users\\tomy_\\AppData\\Local\\Programs\\Python\\Python39\\python.exe'
         WORKSPACE_DIR = "${WORKSPACE}"
-        // Credenciales seguras usando el plugin Credentials
-        POSTGRES_CREDS = credentials('postgres-credentials')
     }
     
     stages {
@@ -58,6 +56,24 @@ pipeline {
             steps {
                 script {
                     echo "[INICIO] Preparando entorno..."
+                    
+                    // Crear config.json con valores por defecto
+                    bat '''
+                        echo {
+                            "mode": "local",
+                            "kafka_broker": "localhost:9092",
+                            "kinesis_stream": "plc_data",
+                            "postgres_local": {
+                                "dbname": "postgres",
+                                "user": "postgres",
+                                "password": "1234",
+                                "host": "localhost",
+                                "port": "5432"
+                            }
+                        } > config.json
+                    '''
+                    
+                    // Crear entorno virtual e instalar dependencias
                     bat '''
                         if not exist venv\\Scripts\\activate.bat (
                             "%PYTHON_PATH%" -m venv venv
@@ -131,32 +147,9 @@ pipeline {
         success {
             echo "✅ Pipeline ejecutado exitosamente"
             archiveArtifacts artifacts: 'maintenance_model.joblib, model_metrics.csv', fingerprint: true
-            
-            // Notificar por email en caso de éxito
-            emailext (
-                subject: "✅ Entrenamiento Exitoso - Build ${env.BUILD_NUMBER}",
-                body: """
-                    El entrenamiento se completó exitosamente.
-                    Tipo: ${params.TIPO_ENTRENAMIENTO}
-                    Ver detalles: ${env.BUILD_URL}
-                """,
-                to: 'tomaspm96@gmail.com',
-                mimeType: 'text/html'
-            )
         }
         failure {
             echo "❌ Error en la ejecución del pipeline"
-            
-            // Notificar por email en caso de fallo
-            emailext (
-                subject: "❌ Fallo en Entrenamiento - Build ${env.BUILD_NUMBER}",
-                body: """
-                    El entrenamiento falló.
-                    Ver logs: ${env.BUILD_URL}console
-                """,
-                to: 'tomaspm96@gmail.com',
-                mimeType: 'text/html'
-            )
         }
         always {
             cleanWs()
