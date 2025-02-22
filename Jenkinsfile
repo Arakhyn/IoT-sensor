@@ -59,18 +59,7 @@ pipeline {
                     
                     // Crear config.json con valores por defecto
                     bat '''
-                        echo {
-                            "mode": "local",
-                            "kafka_broker": "localhost:9092",
-                            "kinesis_stream": "plc_data",
-                            "postgres_local": {
-                                "dbname": "postgres",
-                                "user": "postgres",
-                                "password": "1234",
-                                "host": "localhost",
-                                "port": "5432"
-                            }
-                        } > config.json
+                        echo {"mode": "local","kafka_broker": "localhost:9092","kinesis_stream": "plc_data","postgres_local": {"dbname": "postgres","user": "postgres","password": "1234","host": "localhost","port": "5432"}} > config.json
                     '''
                     
                     // Crear entorno virtual e instalar dependencias
