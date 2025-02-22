@@ -25,6 +25,10 @@ def parse_args():
     parser = argparse.ArgumentParser(description='Entrenamiento del modelo de mantenimiento predictivo')
     parser.add_argument('--tipo', type=str, choices=['completo', 'incremental'],
                       default='completo', help='Tipo de entrenamiento a realizar')
+    
+    # Si no hay argumentos, usar los valores por defecto
+    if len(sys.argv) == 1:
+        return parser.parse_args(['--tipo', 'completo'])
     return parser.parse_args()
 
 def train_with_dummy_data(tipo_entrenamiento):
