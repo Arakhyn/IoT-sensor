@@ -143,20 +143,47 @@ pipeline {
             script {
                 echo "✅ Pipeline ejecutado exitosamente"
                 // Verificar y archivar artefactos
-                if (fileExists('maintenance_model.joblib') && fileExists('model_metrics.csv')) {
-                    archiveArtifacts artifacts: 'maintenance_model.joblib, model_metrics.csv', 
-                                   fingerprint: true,
-                                   allowEmptyArchive: false
-                } else {
-                    error "No se encontraron los archivos de artefactos necesarios"
-                }
+                bat '''
+                    dir
+                    if exist maintenance_model.joblib (
+                        echo "✅ Modelo encontrado"
+                    ) else (
+                        echo "❌ Modelo no encontrado"
+                        exit 1
+                    )
+                    if exist model_metrics.csv (
+                        echo "✅ Métricas encontradas"
+                    ) else (
+                        echo "❌ Métricas no encontradas"
+                        exit 1
+                    )
+                '''
+                archiveArtifacts artifacts: 'maintenance_model.joblib, model_metrics.csv', 
+                               fingerprint: true,
+                               allowEmptyArchive: false
             }
         }
         failure {
             echo "❌ Error en la ejecución del pipeline"
         }
         always {
-            cleanWs()
+            script {
+                try {
+                    // Intentar archivar lo que se pueda antes de limpiar
+                    if (fileExists('model_metrics.csv')) {
+                        archiveArtifacts artifacts: 'model_metrics.csv', 
+                                       allowEmptyArchive: true
+                    }
+                    if (fileExists('maintenance_model.joblib')) {
+                        archiveArtifacts artifacts: 'maintenance_model.joblib', 
+                                       allowEmptyArchive: true
+                    }
+                } catch (Exception e) {
+                    echo "Advertencia: No se pudieron archivar algunos artefactos"
+                } finally {
+                    cleanWs()
+                }
+            }
         }
     }
 } 

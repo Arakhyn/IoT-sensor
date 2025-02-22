@@ -26,8 +26,33 @@ def train_with_dummy_data():
     
     # Generar datos dummy
     n_samples = 1000
-    X = np.random.rand(n_samples, 10)  # 10 características
-    y = np.random.randint(2, size=n_samples)  # Variable objetivo binaria
+    np.random.seed(42)  # Para reproducibilidad
+    
+    # Generar características que simulan datos de sensores
+    X = np.zeros((n_samples, 10))
+    
+    # Datos normales (70%)
+    normal_samples = int(n_samples * 0.7)
+    failure_samples = n_samples - normal_samples
+    
+    # Datos normales
+    X[:normal_samples, 0] = np.random.normal(50, 5, normal_samples)  # Temperatura normal
+    X[:normal_samples, 1] = np.random.normal(60, 5, normal_samples)  # Humedad normal
+    X[:normal_samples, 2] = np.random.normal(100, 10, normal_samples)  # Presión normal
+    X[:normal_samples, 3] = np.random.normal(40, 3, normal_samples)  # Vibración normal
+    
+    # Datos de fallo (30%)
+    X[normal_samples:, 0] = np.random.normal(75, 8, failure_samples)  # Temperatura alta
+    X[normal_samples:, 1] = np.random.normal(85, 8, failure_samples)  # Humedad alta
+    X[normal_samples:, 2] = np.random.normal(70, 15, failure_samples)  # Presión baja
+    X[normal_samples:, 3] = np.random.normal(70, 5, failure_samples)  # Vibración alta
+    
+    # Otras métricas
+    X[:, 4:] = np.random.rand(n_samples, 6) * 100
+    
+    # Generar etiquetas
+    y = np.zeros(n_samples)
+    y[normal_samples:] = 1  # Marcar datos de fallo
     
     # Entrenar modelo
     model = RandomForestClassifier(n_estimators=100, random_state=42)
@@ -46,6 +71,7 @@ def main():
         try:
             # Intentar entrenar con datos reales
             agent.train_model()
+            model = joblib.load('maintenance_model.joblib')
         except Exception as db_error:
             logger.error(f"Error accediendo a la base de datos: {db_error}")
             logger.info("Procediendo con entrenamiento usando datos dummy...")
@@ -57,6 +83,13 @@ def main():
             model_path = os.path.join(os.getcwd(), 'maintenance_model.joblib')
             joblib.dump(model, model_path)
             logger.info(f"Modelo guardado en: {model_path}")
+            
+            # Verificar que el modelo se guardó
+            if os.path.exists(model_path):
+                logger.info("✅ Modelo guardado exitosamente")
+            else:
+                logger.error("❌ Error: No se pudo guardar el modelo")
+                return 1
             
             # Calcular y mostrar métricas básicas
             feature_names = [
