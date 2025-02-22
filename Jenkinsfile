@@ -80,6 +80,38 @@ pipeline {
             }
         }
         
+        stage('Configuración') {
+            steps {
+                script {
+                    echo "[INICIO] Creando archivo de configuración..."
+                    bat '''
+                        echo [DEBUG] Generando config.json...
+                        echo {> config.json
+                        echo   "postgres_local": {>> config.json
+                        echo     "host": "localhost",>> config.json
+                        echo     "port": 5432,>> config.json
+                        echo     "dbname": "maintenance_db",>> config.json
+                        echo     "user": "postgres",>> config.json
+                        echo     "password": "postgres">> config.json
+                        echo   },>> config.json
+                        echo   "kafka_broker": "localhost:9092",>> config.json
+                        echo   "kinesis_stream": "plc_data",>> config.json
+                        echo   "email_notifications": {>> config.json
+                        echo     "smtp_server": "smtp.gmail.com",>> config.json
+                        echo     "smtp_port": 587,>> config.json
+                        echo     "sender_email": "test@example.com",>> config.json
+                        echo     "sender_password": "your_password",>> config.json
+                        echo     "recipients": ["test@example.com"]>> config.json
+                        echo   }>> config.json
+                        echo }>> config.json
+                        
+                        echo [DEBUG] Contenido de config.json:
+                        type config.json
+                    '''
+                }
+            }
+        }
+        
         stage('Verificar Dependencias') {
             steps {
                 script {
