@@ -70,7 +70,7 @@ pipeline {
             }
         }
         
-        stage('Pruebas Unitarias') {
+        stage('Pruebas') {
             agent any
             steps {
                 script {
@@ -88,26 +88,22 @@ pipeline {
             steps {
                 script {
                     echo "[INICIO] Iniciando entrenamiento ${params.TIPO_ENTRENAMIENTO}..."
-                    withCredentials([usernamePassword(credentialsId: 'postgres-credentials', usernameVariable: 'DB_USER', passwordVariable: 'DB_PASS')]) {
-                        bat """
-                            cd "${WORKSPACE}"
-                            call venv\\Scripts\\activate.bat
-                            set DB_USER=%DB_USER%
-                            set DB_PASS=%DB_PASS%
-                            python scripts/train_model.py --tipo ${params.TIPO_ENTRENAMIENTO}
-                            if exist maintenance_model.joblib (
-                                echo "Modelo guardado exitosamente"
-                            ) else (
-                                echo "Error: No se encontró el modelo entrenado"
-                                exit 1
-                            )
-                        """
-                    }
+                    bat """
+                        cd "${WORKSPACE}"
+                        call venv\\Scripts\\activate.bat
+                        python scripts/train_model.py --tipo ${params.TIPO_ENTRENAMIENTO}
+                        if exist maintenance_model.joblib (
+                            echo "✅ Modelo guardado exitosamente"
+                        ) else (
+                            echo "❌ Error: No se encontró el modelo entrenado"
+                            exit 1
+                        )
+                    """
                 }
             }
         }
         
-        stage('Evaluación del Modelo') {
+        stage('Evaluación') {
             agent any
             when {
                 expression { params.GUARDAR_METRICAS }
@@ -133,45 +129,37 @@ pipeline {
     
     post {
         success {
-            node('any') {
-                script {
-                    // Guardar artefactos
-                    archiveArtifacts artifacts: 'maintenance_model.joblib, model_metrics.csv', fingerprint: true
-                    
-                    // Notificar por email en caso de éxito
-                    emailext (
-                        subject: "✅ Entrenamiento Exitoso - Build ${env.BUILD_NUMBER}",
-                        body: """
-                            El entrenamiento se completó exitosamente.
-                            Tipo: ${params.TIPO_ENTRENAMIENTO}
-                            Ver detalles: ${env.BUILD_URL}
-                        """,
-                        to: 'tomaspm96@gmail.com',
-                        mimeType: 'text/html'
-                    )
-                }
-            }
+            echo "✅ Pipeline ejecutado exitosamente"
+            archiveArtifacts artifacts: 'maintenance_model.joblib, model_metrics.csv', fingerprint: true
+            
+            // Notificar por email en caso de éxito
+            emailext (
+                subject: "✅ Entrenamiento Exitoso - Build ${env.BUILD_NUMBER}",
+                body: """
+                    El entrenamiento se completó exitosamente.
+                    Tipo: ${params.TIPO_ENTRENAMIENTO}
+                    Ver detalles: ${env.BUILD_URL}
+                """,
+                to: 'tomaspm96@gmail.com',
+                mimeType: 'text/html'
+            )
         }
         failure {
-            node('any') {
-                script {
-                    // Notificar por email en caso de fallo
-                    emailext (
-                        subject: "❌ Fallo en Entrenamiento - Build ${env.BUILD_NUMBER}",
-                        body: """
-                            El entrenamiento falló.
-                            Ver logs: ${env.BUILD_URL}console
-                        """,
-                        to: 'tomaspm96@gmail.com',
-                        mimeType: 'text/html'
-                    )
-                }
-            }
+            echo "❌ Error en la ejecución del pipeline"
+            
+            // Notificar por email en caso de fallo
+            emailext (
+                subject: "❌ Fallo en Entrenamiento - Build ${env.BUILD_NUMBER}",
+                body: """
+                    El entrenamiento falló.
+                    Ver logs: ${env.BUILD_URL}console
+                """,
+                to: 'tomaspm96@gmail.com',
+                mimeType: 'text/html'
+            )
         }
         always {
-            node('any') {
-                cleanWs()
-            }
+            cleanWs()
         }
     }
 } 
