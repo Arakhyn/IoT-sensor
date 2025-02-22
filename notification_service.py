@@ -35,12 +35,12 @@ class MaintenanceNotificationService:
                 self.logger.info("Notificación en cooldown, saltando...")
                 return
                 
+            self.logger.info("Preparando para enviar alerta de mantenimiento...")
             email_config = self.config['email_notifications']
             
             msg = MIMEMultipart()
             msg['From'] = email_config['sender_email']
             msg['Subject'] = f"⚠️ Mantenimiento Requerido en {days_to_maintenance:.1f} días"
-            msg.set_charset('utf-8')  # Establecer codificación UTF-8
             
             # Crear contenido HTML del email
             html = f"""
@@ -82,7 +82,7 @@ class MaintenanceNotificationService:
             self.logger.info(f"De: {email_config['sender_email']}")
             self.logger.info(f"Para: {', '.join(email_config['recipients'])}")
             self.logger.info(f"Asunto: {msg['Subject']}")
-            self.logger.info("/nContenido HTML:")
+            self.logger.info("\nContenido HTML:")
             self.logger.info(html)
             self.logger.info("=============================================")
             

@@ -60,7 +60,7 @@ class PredictiveMaintenanceAgent:
             pg = self.config['postgres_local']
             db_url = f"postgresql://{pg['user']}:{pg['password']}@{pg['host']}:{pg['port']}/{pg['dbname']}"
             self.engine = create_engine(db_url)
-            self.logger.info("Conexión a base de datos establecida")
+            self.logger.info("Conexion a base de datos establecida")
         except Exception as e:
             self.logger.error(f"Error conectando a la base de datos: {e}")
 
@@ -110,6 +110,17 @@ class PredictiveMaintenanceAgent:
             
             self.logger.info("Modelo entrenado y guardado correctamente")
             
+            # Calcular métricas de eficacia
+            from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
+            
+            y_pred = self.model.predict(X)
+            accuracy = accuracy_score(y, y_pred)
+            precision = precision_score(y, y_pred)
+            recall = recall_score(y, y_pred)
+            f1 = f1_score(y, y_pred)
+            
+            self.logger.info(f"Metricas del modelo: Precision: {precision:.2f}, Recuperacion: {recall:.2f}, F1: {f1:.2f}, Exactitud: {accuracy:.2f}")
+            
         except Exception as e:
             self.logger.error(f"Error en entrenamiento: {e}")
 
@@ -138,7 +149,7 @@ class PredictiveMaintenanceAgent:
             return None
 
     def analyze_feature_importance(self):
-        """Analiza la importancia de cada característica"""
+        """Analiza la importancia de cada caracteristica"""
         try:
             if not hasattr(self.model, 'feature_importances_'):
                 self.logger.warning("Modelo no entrenado completamente, entrenando con datos dummy...")
@@ -163,7 +174,7 @@ class PredictiveMaintenanceAgent:
                 self.logger.info(f"{row['feature']}: {row['importance']:.3f}")
             
         except Exception as e:
-            self.logger.error(f"Error en análisis de características: {e}")
+            self.logger.error(f"Error en analisis de caracteristicas: {e}")
 
     def _initialize_failure_patterns(self):
         """Inicializa patrones conocidos de fallo"""
@@ -268,7 +279,7 @@ class PredictiveMaintenanceAgent:
                         self.logger.warning(f"""
                         🚨 ALERTA DE MANTENIMIENTO
                         Probabilidad de fallo: {alert['probability']:.2%}
-                        Vida útil restante estimada: {alert['rul_hours']:.1f} horas
+                        Vida util restante estimada: {alert['rul_hours']:.1f} horas
                         
                         Patrones de fallo detectados:
                         {json.dumps(failure_patterns, indent=2)}
