@@ -12,7 +12,7 @@ pipeline {
         // No ejecutar builds concurrentes
         disableConcurrentBuilds()
         // Timeout global
-        timeout(time: 1, unit: 'HOURS')
+        timeout(time: 30, unit: 'MINUTES')
     }
     
     environment {
@@ -20,17 +20,27 @@ pipeline {
         PYTHON_PATH = 'C:\\Users\\tomy_\\AppData\\Local\\Programs\\Python\\Python39\\python.exe'
         // El workspace se maneja automáticamente por Jenkins
         WORKSPACE_DIR = "${WORKSPACE}"
+        // Configurar codificación
+        PYTHONIOENCODING = 'utf-8'
+        PYTHONUTF8 = '1'
     }
     
     stages {
         stage('Verificar Entorno') {
             steps {
                 script {
-                    echo "Verificando entorno de ejecución..."
+                    echo "[INICIO] Verificando entorno de ejecucion..."
                     bat '''
+                        echo [DEBUG] Configurando codificacion...
+                        set PYTHONIOENCODING=utf-8
+                        set PYTHONUTF8=1
+                        echo [DEBUG] Verificando version de Python...
                         "%PYTHON_PATH%" --version
+                        echo [DEBUG] Verificando version de pip...
                         "%PYTHON_PATH%" -m pip --version
-                        echo "Workspace: %WORKSPACE%"
+                        echo [DEBUG] Workspace actual: %WORKSPACE%
+                        echo [DEBUG] Listando contenido del directorio:
+                        dir
                     '''
                 }
             }
@@ -39,17 +49,32 @@ pipeline {
         stage('Preparación') {
             steps {
                 script {
-                    echo "Preparando entorno virtual..."
+                    echo "[INICIO] Preparando entorno virtual..."
                     bat '''
-                        if not exist venv\\Scripts\\activate.bat (
-                            echo "Creando nuevo entorno virtual..."
-                            "%PYTHON_PATH%" -m venv venv
-                        ) else (
-                            echo "Usando entorno virtual existente"
+                        echo [DEBUG] Configurando codificacion...
+                        set PYTHONIOENCODING=utf-8
+                        set PYTHONUTF8=1
+                        
+                        echo [DEBUG] Verificando existencia de entorno virtual...
+                        if exist venv (
+                            echo [DEBUG] Eliminando entorno virtual anterior...
+                            rmdir /s /q venv
                         )
+                        
+                        echo [INFO] Creando nuevo entorno virtual...
+                        "%PYTHON_PATH%" -m venv venv
+                        
+                        echo [DEBUG] Activando entorno virtual...
                         call venv\\Scripts\\activate.bat
+                        
+                        echo [DEBUG] Actualizando pip...
                         python -m pip install --upgrade pip
+                        
+                        echo [DEBUG] Instalando dependencias...
                         pip install -r requirements.txt
+                        
+                        echo [DEBUG] Listando paquetes instalados:
+                        pip list
                     '''
                 }
             }
@@ -58,10 +83,17 @@ pipeline {
         stage('Verificar Dependencias') {
             steps {
                 script {
-                    echo "Verificando dependencias del proyecto..."
+                    echo "[INICIO] Verificando dependencias del proyecto..."
                     bat '''
+                        echo [DEBUG] Configurando codificacion...
+                        set PYTHONIOENCODING=utf-8
+                        set PYTHONUTF8=1
+                        
+                        echo [DEBUG] Activando entorno virtual...
                         call venv\\Scripts\\activate.bat
-                        python -c "from predictive_maintenance_agent import PredictiveMaintenanceAgent; print('✅ Dependencias OK')"
+                        
+                        echo [DEBUG] Verificando importacion de modulos...
+                        python -c "import sys; sys.stdout.reconfigure(encoding='utf-8'); from predictive_maintenance_agent import PredictiveMaintenanceAgent; print('[OK] Dependencias verificadas')"
                     '''
                 }
             }
@@ -70,9 +102,16 @@ pipeline {
         stage('Entrenamiento') {
             steps {
                 script {
-                    echo "Iniciando entrenamiento del modelo..."
+                    echo "[INICIO] Iniciando entrenamiento del modelo..."
                     bat '''
+                        echo [DEBUG] Configurando codificacion...
+                        set PYTHONIOENCODING=utf-8
+                        set PYTHONUTF8=1
+                        
+                        echo [DEBUG] Activando entorno virtual...
                         call venv\\Scripts\\activate.bat
+                        
+                        echo [DEBUG] Ejecutando script de entrenamiento...
                         python scripts/train_model.py
                     '''
                 }
@@ -82,17 +121,17 @@ pipeline {
     
     post {
         success {
-            echo '✅ Pipeline ejecutado exitosamente'
+            echo '[OK] Pipeline ejecutado exitosamente'
             script {
-                // Guardar artefactos
+                echo "[DEBUG] Guardando artefactos..."
                 archiveArtifacts artifacts: 'maintenance_model.joblib', fingerprint: true
             }
         }
         failure {
-            echo '❌ Error en la ejecución del pipeline'
+            echo '[ERROR] Error en la ejecucion del pipeline'
         }
         always {
-            echo 'Limpiando workspace...'
+            echo '[LIMPIEZA] Limpiando workspace...'
             cleanWs()
         }
     }
