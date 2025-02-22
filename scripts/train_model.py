@@ -87,12 +87,15 @@ def main():
         
         try:
             # Intentar entrenar con datos reales
-            agent.train_model()
+            model = agent.train_model()
+            
+            # Guardar el modelo explícitamente
+            joblib.dump(model, model_path)
+            logger.info(f"Modelo guardado en: {model_path}")
             
             # Verificar que el modelo se guardó
             if os.path.exists(model_path):
                 logger.info("✅ Modelo guardado exitosamente (datos reales)")
-                model = joblib.load(model_path)
             else:
                 raise Exception("No se encontró el modelo después del entrenamiento con datos reales")
                 
