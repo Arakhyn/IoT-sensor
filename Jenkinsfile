@@ -44,7 +44,7 @@ pipeline {
                     echo "[INICIO] Validando código..."
                     bat '''
                         call venv\\Scripts\\activate.bat
-                        pip install pylint
+                        pip install pylint pytest
                         pylint scripts/*.py || exit 0
                     '''
                 }
@@ -70,6 +70,7 @@ pipeline {
                         call venv\\Scripts\\activate.bat
                         python -m pip install --upgrade pip
                         pip install -r requirements.txt
+                        pip install pytest
                     '''
                 }
             }
@@ -119,6 +120,13 @@ pipeline {
                     bat '''
                         call venv\\Scripts\\activate.bat
                         python scripts/evaluate_model.py
+                        
+                        if exist model_metrics.csv (
+                            echo "✅ Métricas guardadas exitosamente"
+                        ) else (
+                            echo "❌ Error: No se encontró el archivo de métricas"
+                            exit 1
+                        )
                     '''
                     
                     // Leer y mostrar métricas en la consola
@@ -132,8 +140,17 @@ pipeline {
     
     post {
         success {
-            echo "✅ Pipeline ejecutado exitosamente"
-            archiveArtifacts artifacts: 'maintenance_model.joblib, model_metrics.csv', fingerprint: true
+            script {
+                echo "✅ Pipeline ejecutado exitosamente"
+                // Verificar y archivar artefactos
+                if (fileExists('maintenance_model.joblib') && fileExists('model_metrics.csv')) {
+                    archiveArtifacts artifacts: 'maintenance_model.joblib, model_metrics.csv', 
+                                   fingerprint: true,
+                                   allowEmptyArchive: false
+                } else {
+                    error "No se encontraron los archivos de artefactos necesarios"
+                }
+            }
         }
         failure {
             echo "❌ Error en la ejecución del pipeline"

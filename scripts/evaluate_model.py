@@ -5,6 +5,7 @@ from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_sc
 import logging
 import json
 from datetime import datetime
+from sklearn.preprocessing import StandardScaler
 
 def setup_logging():
     """Configura el sistema de logging"""
@@ -25,15 +26,33 @@ def generate_dummy_data():
     
     # Generar características que simulan datos de sensores
     X_test = np.zeros((n_samples, 10))
-    X_test[:, 0] = np.random.normal(50, 10, n_samples)  # Temperatura
-    X_test[:, 1] = np.random.normal(75, 15, n_samples)  # Humedad
-    X_test[:, 2] = np.random.normal(100, 20, n_samples)  # Presión
-    X_test[:, 3] = np.random.normal(60, 5, n_samples)   # Vibración
-    X_test[:, 4:] = np.random.rand(n_samples, 6) * 100  # Otras métricas
     
-    # Generar etiquetas basadas en reglas simples
+    # Generar datos normales para condiciones normales
+    normal_samples = int(n_samples * 0.7)  # 70% datos normales
+    failure_samples = n_samples - normal_samples  # 30% datos de fallo
+    
+    # Datos normales
+    X_test[:normal_samples, 0] = np.random.normal(50, 5, normal_samples)  # Temperatura normal
+    X_test[:normal_samples, 1] = np.random.normal(60, 5, normal_samples)  # Humedad normal
+    X_test[:normal_samples, 2] = np.random.normal(100, 10, normal_samples)  # Presión normal
+    X_test[:normal_samples, 3] = np.random.normal(40, 3, normal_samples)  # Vibración normal
+    
+    # Datos de fallo
+    X_test[normal_samples:, 0] = np.random.normal(75, 8, failure_samples)  # Temperatura alta
+    X_test[normal_samples:, 1] = np.random.normal(85, 8, failure_samples)  # Humedad alta
+    X_test[normal_samples:, 2] = np.random.normal(70, 15, failure_samples)  # Presión baja
+    X_test[normal_samples:, 3] = np.random.normal(70, 5, failure_samples)  # Vibración alta
+    
+    # Otras métricas
+    X_test[:, 4:] = np.random.rand(n_samples, 6) * 100
+    
+    # Generar etiquetas
     y_test = np.zeros(n_samples)
-    y_test[(X_test[:, 0] > 70) | (X_test[:, 3] > 70)] = 1  # Falla si temperatura o vibración alta
+    y_test[normal_samples:] = 1  # Marcar datos de fallo
+    
+    # Escalar datos
+    scaler = StandardScaler()
+    X_test = scaler.fit_transform(X_test)
     
     return X_test, y_test
 
