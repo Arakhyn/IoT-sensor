@@ -1,5 +1,6 @@
 import sys
 import os
+import argparse
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from predictive_maintenance_agent import PredictiveMaintenanceAgent
@@ -19,13 +20,20 @@ def setup_logging():
     )
     return logging.getLogger(__name__)
 
-def train_with_dummy_data():
+def parse_args():
+    """Procesa los argumentos de línea de comandos"""
+    parser = argparse.ArgumentParser(description='Entrenamiento del modelo de mantenimiento predictivo')
+    parser.add_argument('--tipo', type=str, choices=['completo', 'incremental'],
+                      default='completo', help='Tipo de entrenamiento a realizar')
+    return parser.parse_args()
+
+def train_with_dummy_data(tipo_entrenamiento):
     """Entrena el modelo con datos dummy si no hay datos reales disponibles"""
     logger = logging.getLogger(__name__)
-    logger.warning("Usando datos dummy para entrenamiento inicial")
+    logger.warning(f"Usando datos dummy para entrenamiento {tipo_entrenamiento}")
     
     # Generar datos dummy
-    n_samples = 1000
+    n_samples = 1000 if tipo_entrenamiento == 'completo' else 500
     np.random.seed(42)  # Para reproducibilidad
     
     # Generar características que simulan datos de sensores
@@ -55,15 +63,19 @@ def train_with_dummy_data():
     y[normal_samples:] = 1  # Marcar datos de fallo
     
     # Entrenar modelo
-    model = RandomForestClassifier(n_estimators=100, random_state=42)
+    model = RandomForestClassifier(
+        n_estimators=100 if tipo_entrenamiento == 'completo' else 50,
+        random_state=42
+    )
     model.fit(X, y)
     
     return model, X, y
 
 def main():
+    args = parse_args()
     logger = setup_logging()
     try:
-        logger.info("Iniciando entrenamiento del modelo...")
+        logger.info(f"Iniciando entrenamiento {args.tipo} del modelo...")
         
         # Inicializar agente
         agent = PredictiveMaintenanceAgent()
@@ -82,10 +94,10 @@ def main():
                 
         except Exception as db_error:
             logger.error(f"Error accediendo a la base de datos: {db_error}")
-            logger.info("Procediendo con entrenamiento usando datos dummy...")
+            logger.info(f"Procediendo con entrenamiento {args.tipo} usando datos dummy...")
             
             # Entrenar con datos dummy
-            model, X, y = train_with_dummy_data()
+            model, X, y = train_with_dummy_data(args.tipo)
             
             # Guardar el modelo
             joblib.dump(model, model_path)
