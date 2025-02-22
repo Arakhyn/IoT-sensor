@@ -19,10 +19,22 @@ def setup_logging():
     return logging.getLogger(__name__)
 
 def generate_dummy_data():
-    """Genera datos dummy para evaluación cuando no hay datos reales"""
-    n_samples = 100
-    X_test = np.random.rand(n_samples, 10)
-    y_test = np.random.randint(2, size=n_samples)
+    """Genera datos dummy más realistas para evaluación"""
+    n_samples = 1000
+    np.random.seed(42)  # Para reproducibilidad
+    
+    # Generar características que simulan datos de sensores
+    X_test = np.zeros((n_samples, 10))
+    X_test[:, 0] = np.random.normal(50, 10, n_samples)  # Temperatura
+    X_test[:, 1] = np.random.normal(75, 15, n_samples)  # Humedad
+    X_test[:, 2] = np.random.normal(100, 20, n_samples)  # Presión
+    X_test[:, 3] = np.random.normal(60, 5, n_samples)   # Vibración
+    X_test[:, 4:] = np.random.rand(n_samples, 6) * 100  # Otras métricas
+    
+    # Generar etiquetas basadas en reglas simples
+    y_test = np.zeros(n_samples)
+    y_test[(X_test[:, 0] > 70) | (X_test[:, 3] > 70)] = 1  # Falla si temperatura o vibración alta
+    
     return X_test, y_test
 
 def evaluate_model():

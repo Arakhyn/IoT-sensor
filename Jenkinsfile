@@ -121,12 +121,10 @@ pipeline {
                         python scripts/evaluate_model.py
                     '''
                     
-                    // Publicar métricas como gráficos en Jenkins
-                    plot csvFileName: 'metrics.csv',
-                         csvSeries: [[displayTableFlag: false, exclusionValues: '', file: 'model_metrics.csv', inclusionFlag: 'OFF', url: '']], 
-                         group: 'Métricas del Modelo',
-                         title: 'Evolución del Rendimiento',
-                         style: 'line'
+                    // Leer y mostrar métricas en la consola
+                    def metricas = readFile('model_metrics.csv').trim()
+                    echo "📊 Métricas del modelo (último registro):"
+                    echo metricas.split('\n')[1] // Mostrar solo la última línea con métricas
                 }
             }
         }
