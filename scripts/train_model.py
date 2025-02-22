@@ -67,11 +67,19 @@ def main():
         
         # Inicializar agente
         agent = PredictiveMaintenanceAgent()
+        model_path = os.path.join(os.getcwd(), 'maintenance_model.joblib')
         
         try:
             # Intentar entrenar con datos reales
             agent.train_model()
-            model = joblib.load('maintenance_model.joblib')
+            
+            # Verificar que el modelo se guardó
+            if os.path.exists(model_path):
+                logger.info("✅ Modelo guardado exitosamente (datos reales)")
+                model = joblib.load(model_path)
+            else:
+                raise Exception("No se encontró el modelo después del entrenamiento con datos reales")
+                
         except Exception as db_error:
             logger.error(f"Error accediendo a la base de datos: {db_error}")
             logger.info("Procediendo con entrenamiento usando datos dummy...")
@@ -80,13 +88,12 @@ def main():
             model, X, y = train_with_dummy_data()
             
             # Guardar el modelo
-            model_path = os.path.join(os.getcwd(), 'maintenance_model.joblib')
             joblib.dump(model, model_path)
             logger.info(f"Modelo guardado en: {model_path}")
             
             # Verificar que el modelo se guardó
             if os.path.exists(model_path):
-                logger.info("✅ Modelo guardado exitosamente")
+                logger.info("✅ Modelo guardado exitosamente (datos dummy)")
             else:
                 logger.error("❌ Error: No se pudo guardar el modelo")
                 return 1
