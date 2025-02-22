@@ -7,8 +7,10 @@ pipeline {
     }
     
     environment {
-        PYTHON_PATH = 'C:\\Users\\tomy_\\AppData\\Local\\Programs\\Python\\Python39\\python.exe'
-        WORKSPACE_DIR = 'C:\\Users\\tomy_\\Desktop\\Ingenieria inteligencia artificial\\A003-POETRY-SETUP-master\\Proyecto IoT'
+        // Usar variables de entorno de Jenkins
+        PYTHON_PATH = "${tool 'Python3'}"
+        // El workspace se maneja automáticamente por Jenkins
+        WORKSPACE_DIR = "${WORKSPACE}"
     }
     
     stages {
@@ -18,7 +20,7 @@ pipeline {
                     // Crear entorno virtual si no existe
                     bat '''
                         if not exist venv\\Scripts\\activate.bat (
-                            %PYTHON_PATH% -m venv venv
+                            python -m venv venv
                         )
                         call venv\\Scripts\\activate.bat
                         pip install -r requirements.txt
@@ -43,7 +45,6 @@ pipeline {
                 script {
                     bat '''
                         call venv\\Scripts\\activate.bat
-                        cd %WORKSPACE_DIR%
                         python scripts/train_model.py
                     '''
                 }
